@@ -1,0 +1,536 @@
+:root {
+  color-scheme: light;
+  --bg: #f5f4ef;
+  --ink: #1f2528;
+  --muted: #657174;
+  --line: #d8d6cb;
+  --panel: #ffffff;
+  --accent: #0f766e;
+  --accent-2: #a43f31;
+  --gold: #b58220;
+  --wolf: #51364a;
+  --good: #315f72;
+  --dead: #8d9290;
+  --shadow: 0 14px 36px rgba(31, 37, 40, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family:
+    Inter, "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", Arial,
+    sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+button,
+select,
+textarea,
+input {
+  font: inherit;
+}
+
+button {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  min-height: 38px;
+  padding: 0 14px;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.app-shell {
+  min-height: 100vh;
+  padding: 22px;
+}
+
+.topbar,
+.status-strip,
+.panel,
+.table-panel {
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: var(--shadow);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-radius: 8px;
+  padding: 18px 20px;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 28px;
+  letter-spacing: 0;
+}
+
+h2 {
+  font-size: 16px;
+}
+
+.topbar p,
+.panel-title span,
+.player-meta,
+.player-note,
+.public-log,
+.speech-log,
+.status-item span {
+  color: var(--muted);
+}
+
+.top-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.status-strip {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1px;
+  margin: 16px 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.status-item {
+  padding: 14px 16px;
+  background: #fff;
+}
+
+.status-item strong {
+  display: block;
+  font-size: 20px;
+  margin-top: 3px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(520px, 620px) minmax(380px, 1fr) minmax(240px, 300px);
+  gap: 16px;
+  align-items: start;
+}
+
+.panel,
+.table-panel {
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.players-grid {
+  position: relative;
+  min-height: 720px;
+  border-radius: 50%;
+  margin-top: 8px;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(91, 60, 34, 0.94) 0 24%, rgba(42, 29, 21, 0.96) 25% 42%, transparent 43%),
+    radial-gradient(circle at 50% 50%, rgba(239, 199, 124, 0.22), transparent 62%);
+}
+
+.players-grid::before {
+  content: "圆桌";
+  position: absolute;
+  inset: 35% 29%;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(239, 199, 124, 0.26);
+  color: rgba(255, 224, 160, 0.82);
+  font-weight: 900;
+  font-size: 28px;
+  letter-spacing: 0;
+  background:
+    radial-gradient(circle, rgba(82, 54, 31, 0.8), rgba(22, 20, 17, 0.9));
+  pointer-events: none;
+}
+
+.player-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  background: #fff;
+  min-width: 112px;
+}
+
+.player-card.human {
+  border-color: var(--accent);
+}
+
+.player-card.dead {
+  background: #f3f2ec;
+}
+
+.player-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.player-persona {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+}
+
+.player-id {
+  font-size: 17px;
+}
+
+.player-name {
+  max-width: 48px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  line-height: 1.1;
+}
+
+.player-state,
+.tag {
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 12px;
+  background: #edf2f1;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.tag.wolf,
+.tag.werewolf {
+  background: #f1e9ef;
+  color: var(--wolf);
+}
+
+.tag.good {
+  background: #e8f0f2;
+  color: var(--good);
+}
+
+.tag.dead {
+  background: #eeece6;
+  color: var(--dead);
+}
+
+.tag.hidden {
+  background: #eeece6;
+  color: #6d716f;
+}
+
+.player-meta {
+  margin-top: 7px;
+  font-size: 12px;
+}
+
+.player-note {
+  margin-top: 6px;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.player-note:empty {
+  display: none;
+}
+
+.player-avatar img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.phase-card {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+}
+
+.phase-card h2 {
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+
+.phase-card p {
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.ai-progress {
+  display: none;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+}
+
+.ai-progress.active {
+  display: grid;
+  gap: 8px;
+}
+
+.voice-panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+}
+
+.voice-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.voice-head span {
+  font-size: 13px;
+}
+
+.voice-actions {
+  margin-top: 0;
+}
+
+.progress-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.progress-head span {
+  color: var(--muted);
+}
+
+.progress-track {
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #e8e5dc;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 120ms linear;
+}
+
+.action-panel {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.form-row {
+  display: grid;
+  gap: 8px;
+}
+
+.choice-row,
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  padding: 10px;
+  background: #fff;
+}
+
+select,
+input {
+  min-height: 38px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  padding: 0 10px;
+  background: #fff;
+}
+
+.speech-panel {
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+
+.speech-log,
+.public-log {
+  display: grid;
+  gap: 10px;
+  max-height: 420px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.speech-entry,
+.log-entry {
+  border-left: 3px solid var(--line);
+  padding: 8px 10px;
+  background: #fff;
+  border-radius: 0 8px 8px 0;
+  line-height: 1.5;
+}
+
+.speech-entry {
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  gap: 10px;
+  align-items: start;
+}
+
+.speech-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.speech-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.speech-body p {
+  margin: 4px 0 0;
+}
+
+.speech-entry.speech-empty {
+  display: block;
+}
+
+.right-panel .public-log {
+  min-height: 560px;
+  max-height: calc(100vh - 230px);
+}
+
+.speech-entry strong,
+.log-entry strong {
+  color: var(--ink);
+}
+
+.vote-card {
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.vote-card-title,
+.vote-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.vote-card-title {
+  margin-bottom: 10px;
+}
+
+.vote-card-title span,
+.vote-bar span {
+  font-size: 12px;
+}
+
+.vote-bars {
+  display: grid;
+  gap: 8px;
+}
+
+.vote-bar {
+  display: grid;
+  grid-template-columns: minmax(86px, 1fr) minmax(90px, 1.2fr) 36px;
+}
+
+.vote-track {
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.vote-track i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.vote-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.vote-chip {
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.left-panel .compact-role-stage {
+  margin-bottom: 14px;
+}
+
+.left-panel .identity-card {
+  min-height: 0;
+}
+
+.left-panel .card-copy blockquote {
+  display: none;
+}
+
+.log-title {
+  margin-top: 0;
+}
+
+.winner {
+  border-color: var(--gold);
+  background: #fff9e9;
+}

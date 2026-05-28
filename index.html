@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 狼人杀 12 人预女猎守</title>
+    <link rel="stylesheet" href="styles-base.css" />
+    <link rel="stylesheet" href="styles-theme.css" />
+    <link rel="stylesheet" href="styles-responsive.css" />
+  </head>
+  <body>
+    <section class="start-screen" id="startScreen">
+      <div class="start-panel">
+        <div class="start-moon"></div>
+        <p class="start-kicker">12 人预女猎守 · AI 文字局</p>
+        <h1 class="start-title">AI 狼人杀</h1>
+        <p class="start-copy">黑夜落下，身份即将发放。抽取你的身份卡后，第一夜才会正式开始。</p>
+        <div class="draw-stage" id="drawStage">
+          <div class="draw-card-back">
+            <span>?</span>
+          </div>
+          <div class="draw-card-face" id="drawCardFace"></div>
+        </div>
+        <button id="startGameBtn" class="start-button">开始游戏</button>
+      </div>
+    </section>
+
+    <main class="app-shell">
+      <section class="topbar">
+        <div>
+          <h1 class="game-title">AI 狼人杀</h1>
+          <p>12 人标准局 · 预女猎守 · 屠边规则</p>
+        </div>
+        <div class="top-actions">
+          <button id="newGameBtn" class="primary">新开一局</button>
+          <button id="autoStepBtn">自动推进</button>
+        </div>
+      </section>
+
+      <section class="status-strip" id="statusStrip"></section>
+
+      <section class="layout">
+        <aside class="panel left-panel">
+          <section class="role-stage compact-role-stage">
+            <div class="identity-card" id="identityCard"></div>
+            <div class="skill-panel" id="skillPanel"></div>
+          </section>
+          <div class="panel-title">
+            <h2 class="art-heading">玩家席位</h2>
+            <span id="aliveCount"></span>
+          </div>
+          <div id="playersGrid" class="players-grid"></div>
+        </aside>
+
+        <section class="table-panel">
+          <div class="phase-card" id="phaseCard"></div>
+          <div class="ai-progress" id="aiProgress"></div>
+          <div class="voice-panel" id="voicePanel"></div>
+          <div class="action-panel" id="actionPanel"></div>
+          <div class="speech-panel">
+            <div class="panel-title">
+              <h2 class="art-heading">公开发言</h2>
+              <span id="speechOrder"></span>
+            </div>
+            <div id="speechLog" class="speech-log"></div>
+          </div>
+        </section>
+
+        <aside class="panel right-panel">
+          <div class="panel-title log-title">
+            <h2 class="art-heading">事件日志</h2>
+          </div>
+          <div id="publicLog" class="public-log"></div>
+        </aside>
+      </section>
+    </main>
+
+    <template id="playerCardTemplate">
+      <article class="player-card">
+        <div class="player-head">
+          <div class="player-persona">
+            <div class="player-avatar"></div>
+            <span class="player-name"></span>
+          </div>
+          <strong class="player-id"></strong>
+          <span class="player-state"></span>
+        </div>
+        <div class="player-meta"></div>
+        <div class="player-note"></div>
+      </article>
+    </template>
+
+    <script src="runtime-config.js"></script>
+    <script src="game-config.js"></script>
+    <script src="game-voice.js"></script>
+    <script src="game-state.js"></script>
+    <script src="game-ai.js"></script>
+    <script src="game-rules.js"></script>
+    <script src="game-render.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
