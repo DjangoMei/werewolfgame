@@ -1,4 +1,4 @@
-@media (max-width: 719px) {
+@media (max-width: 719px) and (pointer: coarse) {
   .layout {
     grid-template-columns: 1fr;
   }

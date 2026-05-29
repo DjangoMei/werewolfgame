@@ -17,7 +17,8 @@ function applyGameScale() {
   if (!viewport || !stage || !shell) return;
 
   const availableWidth = Math.max(320, Math.floor(viewport.clientWidth));
-  const compact = availableWidth < GAME_COMPACT_WIDTH;
+  const touchCompact = window.matchMedia("(pointer: coarse)").matches;
+  const compact = touchCompact && availableWidth < GAME_COMPACT_WIDTH;
   const scale = compact ? 1 : Math.min(1, availableWidth / GAME_DESIGN_WIDTH);
   const logicalWidth = compact ? availableWidth : Math.max(availableWidth, GAME_DESIGN_WIDTH);
 
