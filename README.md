@@ -42,7 +42,7 @@ http://localhost:8787
 ```js
 window.AI_WEREWOLF_CONFIG = {
   apiBaseUrl: "",
-  enableRemoteAi: false,
+  enableRemoteAi: true,
 };
 ```
 
@@ -58,8 +58,10 @@ window.AI_WEREWOLF_CONFIG = {
 ## 发布说明
 
 - 不要把 `.env.local` 或 API Key 打包进静态站点。
+- 不要在 `runtime-config.js` 中配置 Ark API Key、Ark URL 或 endpoint；这些只应存在于后端环境变量。
 - itch.io 只托管公开静态文件，远程 AI 需要单独部署 `server.js`。
 - `ITCH_README.md` 记录了 itch.io 打包相关注意事项。
+- 外网部署和域名反代见 `DEPLOYMENT.md`。
 
 ## 项目结构
 
@@ -74,7 +76,7 @@ game-voice.js           发言与文本表现
 game-config.js          游戏配置
 runtime-config.js       运行时远程 AI 配置
 server.js               可选 Node 后端代理
+DEPLOYMENT.md           后端部署说明
 assets/avatars/         玩家头像资源
 tools/                  打包与维护脚本
 ```
-

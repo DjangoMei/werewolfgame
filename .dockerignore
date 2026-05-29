@@ -1,0 +1,5 @@
+.git
+.env.local
+*.log
+node_modules
+*.zip

@@ -1,0 +1,14 @@
+{
+  "name": "ai-werewolf",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js && node --check game-ai.js",
+    "package:itch": "node tools/package-itch.js",
+    "sync:homepage": "node tools/sync-homepage.js"
+  },
+  "engines": {
+    "node": ">=18.17"
+  }
+}

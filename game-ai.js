@@ -186,45 +186,6 @@ function aiApiBase() {
   return window.location.protocol === "file:" ? "http://localhost:8787" : "";
 }
 
-function frontAiSystemPrompt() {
-  return [
-    "You are an AI player in a 12-player Chinese Werewolf text game.",
-    "Use only the publicState and privateState included in the request. Never claim hidden information outside your own view.",
-    "If you are a wolf, pretend to be good in public speech. Do not intentionally reveal wolf teammates, night kill targets, or your wolf identity, but rare natural mistakes are allowed.",
-    "If you are witch, guard, hunter, or other god roles, usually hide your role and speak like a villager unless revealing key information is necessary.",
-    "Wolves should usually arrange at least one fake seer claim during sheriff election if no human wolf has already done so.",
-    "Do not blindly repeat previous speakers. Give your own read, suspicion, vote logic, or strategic reason.",
-    "Return JSON only. No Markdown. No explanation outside JSON.",
-  ].join("\n");
-}
-
-function frontAiUserPrompt(payload) {
-  return JSON.stringify(
-    {
-      task: payload.task,
-      playerId: payload.playerId,
-      legalTargetIds: payload.legalTargetIds || [],
-      isPk: Boolean(payload.isPk),
-      round: payload.round || null,
-      responseSchema: payload.responseSchema,
-      view: payload.view,
-    },
-    null,
-    2,
-  );
-}
-
-function parseAiJsonContent(content) {
-  const text = String(content || "{}").trim();
-  try {
-    return JSON.parse(text);
-  } catch (error) {
-    const match = text.match(/\{[\s\S]*\}/);
-    if (match) return JSON.parse(match[0]);
-    throw error;
-  }
-}
-
 async function fetchWithTimeout(url, options, timeoutMs = 45000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -233,36 +194,6 @@ async function fetchWithTimeout(url, options, timeoutMs = 45000) {
   } finally {
     clearTimeout(timer);
   }
-}
-
-async function callArkDirect(payload) {
-  const config = window.AI_WEREWOLF_CONFIG || {};
-  if (!config.directArk || !config.arkApiKey) {
-    throw new Error("Direct Ark config is missing.");
-  }
-  const response = await fetchWithTimeout(config.arkBaseUrl || "https://ark.cn-beijing.volces.com/api/v3/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${config.arkApiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: config.arkEndpointId || "ep-20260522175712-qq28w",
-      messages: [
-        { role: "system", content: frontAiSystemPrompt() },
-        { role: "user", content: frontAiUserPrompt(payload) },
-      ],
-      temperature: payload.task === "speech" ? 0.85 : 0.35,
-      max_tokens: payload.task === "speech" ? 260 : 120,
-      response_format: { type: "json_object" },
-    }),
-  });
-  const raw = await response.text();
-  if (!response.ok) {
-    throw new Error(`Ark API ${response.status}: ${raw.slice(0, 300)}`);
-  }
-  const data = JSON.parse(raw);
-  return parseAiJsonContent(data.choices?.[0]?.message?.content || "{}");
 }
 
 async function callAiDecision(playerId, task, options = {}) {
@@ -293,11 +224,7 @@ async function callAiDecision(playerId, task, options = {}) {
     responseSchema: responseSchemas[task],
     view: privateStateFor(playerId),
   };
-  const config = window.AI_WEREWOLF_CONFIG || {};
-  if (config.directArk && config.arkApiKey) {
-    return callArkDirect(payload);
-  }
-  const response = await fetch(`${baseUrl}/api/ai-player`, {
+  const response = await fetchWithTimeout(`${baseUrl}/api/ai-player`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),

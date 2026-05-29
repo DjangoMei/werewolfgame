@@ -25,55 +25,59 @@
       </div>
     </section>
 
-    <main class="app-shell">
-      <section class="topbar">
-        <div>
-          <h1 class="game-title">AI 狼人杀</h1>
-          <p>12 人标准局 · 预女猎守 · 屠边规则</p>
-        </div>
-        <div class="top-actions">
-          <button id="newGameBtn" class="primary">新开一局</button>
-          <button id="autoStepBtn">自动推进</button>
-        </div>
-      </section>
-
-      <section class="status-strip" id="statusStrip"></section>
-
-      <section class="layout">
-        <aside class="panel left-panel">
-          <section class="role-stage compact-role-stage">
-            <div class="identity-card" id="identityCard"></div>
-            <div class="skill-panel" id="skillPanel"></div>
-          </section>
-          <div class="panel-title">
-            <h2 class="art-heading">玩家席位</h2>
-            <span id="aliveCount"></span>
-          </div>
-          <div id="playersGrid" class="players-grid"></div>
-        </aside>
-
-        <section class="table-panel">
-          <div class="phase-card" id="phaseCard"></div>
-          <div class="ai-progress" id="aiProgress"></div>
-          <div class="voice-panel" id="voicePanel"></div>
-          <div class="action-panel" id="actionPanel"></div>
-          <div class="speech-panel">
-            <div class="panel-title">
-              <h2 class="art-heading">公开发言</h2>
-              <span id="speechOrder"></span>
+    <div class="game-viewport" id="gameViewport">
+      <div class="game-scale-stage" id="gameScaleStage">
+        <main class="app-shell" id="gameShell">
+          <section class="topbar">
+            <div>
+              <h1 class="game-title">AI 狼人杀</h1>
+              <p>12 人标准局 · 预女猎守 · 屠边规则</p>
             </div>
-            <div id="speechLog" class="speech-log"></div>
-          </div>
-        </section>
+            <div class="top-actions">
+              <button id="newGameBtn" class="primary">新开一局</button>
+              <button id="autoStepBtn">自动推进</button>
+            </div>
+          </section>
 
-        <aside class="panel right-panel">
-          <div class="panel-title log-title">
-            <h2 class="art-heading">事件日志</h2>
-          </div>
-          <div id="publicLog" class="public-log"></div>
-        </aside>
-      </section>
-    </main>
+          <section class="status-strip" id="statusStrip"></section>
+
+          <section class="layout">
+            <aside class="panel left-panel">
+              <section class="role-stage compact-role-stage">
+                <div class="identity-card" id="identityCard"></div>
+                <div class="skill-panel" id="skillPanel"></div>
+              </section>
+              <div class="panel-title">
+                <h2 class="art-heading">玩家席位</h2>
+                <span id="aliveCount"></span>
+              </div>
+              <div id="playersGrid" class="players-grid"></div>
+            </aside>
+
+            <section class="table-panel">
+              <div class="phase-card" id="phaseCard"></div>
+              <div class="ai-progress" id="aiProgress"></div>
+              <div class="voice-panel" id="voicePanel"></div>
+              <div class="action-panel" id="actionPanel"></div>
+              <div class="speech-panel">
+                <div class="panel-title">
+                  <h2 class="art-heading">公开发言</h2>
+                  <span id="speechOrder"></span>
+                </div>
+                <div id="speechLog" class="speech-log"></div>
+              </div>
+            </section>
+
+            <aside class="panel right-panel">
+              <div class="panel-title log-title">
+                <h2 class="art-heading">事件日志</h2>
+              </div>
+              <div id="publicLog" class="public-log"></div>
+            </aside>
+          </section>
+        </main>
+      </div>
+    </div>
 
     <template id="playerCardTemplate">
       <article class="player-card">
@@ -97,6 +101,7 @@
     <script src="game-ai.js"></script>
     <script src="game-rules.js"></script>
     <script src="game-render.js"></script>
+    <script src="game-scale.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

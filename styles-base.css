@@ -25,6 +25,7 @@ body {
     sans-serif;
   background: var(--bg);
   color: var(--ink);
+  overflow-x: hidden;
 }
 
 button,
@@ -59,9 +60,33 @@ button.primary {
   color: #fff;
 }
 
+.game-viewport {
+  --game-ui-scale: 1;
+  --game-logical-width: 100%;
+  --game-stage-width: 100%;
+  --game-stage-height: auto;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.game-scale-stage {
+  position: relative;
+  width: var(--game-stage-width);
+  height: var(--game-stage-height);
+  min-height: var(--game-stage-height);
+  margin: 0 auto;
+  overflow: visible;
+}
+
 .app-shell {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: var(--game-logical-width);
   min-height: 100vh;
   padding: 22px;
+  transform: scale(var(--game-ui-scale));
+  transform-origin: top left;
 }
 
 .topbar,

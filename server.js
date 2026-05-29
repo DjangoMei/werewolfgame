@@ -10,6 +10,9 @@ const ARK_ENDPOINT_ID = process.env.ARK_ENDPOINT_ID || "ep-20260522175712-qq28w"
 const ARK_MODEL_NAME = process.env.ARK_MODEL_NAME || "deepseek-v3-2-251201";
 const ARK_BASE_URL =
   process.env.ARK_BASE_URL || "https://ark.cn-beijing.volces.com/api/v3/chat/completions";
+const ALLOWED_ORIGINS = parseList(process.env.ALLOWED_ORIGINS);
+const AI_REQUESTS_PER_MINUTE = Number(process.env.AI_REQUESTS_PER_MINUTE || 30);
+const rateLimitBuckets = new Map();
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -34,13 +37,59 @@ function loadLocalEnv() {
   }
 }
 
-function send(res, statusCode, body, contentType = "application/json; charset=utf-8") {
+function parseList(value) {
+  return String(value || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function isOriginAllowed(origin) {
+  if (!origin || ALLOWED_ORIGINS.length === 0 || ALLOWED_ORIGINS.includes("*")) return true;
+  return ALLOWED_ORIGINS.includes(origin);
+}
+
+function corsHeaders(req) {
+  const headers = {
+    "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+  };
+  const origin = req.headers.origin;
+  if (ALLOWED_ORIGINS.length === 0 || ALLOWED_ORIGINS.includes("*")) {
+    headers["Access-Control-Allow-Origin"] = "*";
+  } else if (origin && isOriginAllowed(origin)) {
+    headers["Access-Control-Allow-Origin"] = origin;
+    headers.Vary = "Origin";
+  }
+  return headers;
+}
+
+function clientIp(req) {
+  const forwardedFor = req.headers["x-forwarded-for"];
+  if (typeof forwardedFor === "string" && forwardedFor.trim()) {
+    return forwardedFor.split(",")[0].trim();
+  }
+  return req.socket.remoteAddress || "unknown";
+}
+
+function isRateLimited(req) {
+  if (!Number.isFinite(AI_REQUESTS_PER_MINUTE) || AI_REQUESTS_PER_MINUTE <= 0) return false;
+  const ip = clientIp(req);
+  const now = Date.now();
+  const current = rateLimitBuckets.get(ip);
+  if (!current || now - current.startedAt >= 60_000) {
+    rateLimitBuckets.set(ip, { startedAt: now, count: 1 });
+    return false;
+  }
+  current.count += 1;
+  return current.count > AI_REQUESTS_PER_MINUTE;
+}
+
+function send(req, res, statusCode, body, contentType = "application/json; charset=utf-8") {
   res.writeHead(statusCode, {
     "Content-Type": contentType,
     "Cache-Control": "no-store",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    ...corsHeaders(req),
   });
   res.end(body);
 }
@@ -93,6 +142,17 @@ function buildUserPrompt(payload) {
   );
 }
 
+function parseAiJsonContent(content) {
+  const text = String(content || "{}").trim();
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    const match = text.match(/\{[\s\S]*\}/);
+    if (match) return JSON.parse(match[0]);
+    throw error;
+  }
+}
+
 async function callArk(payload) {
   if (!ARK_API_KEY) {
     throw new Error("Missing ARK_API_KEY. Set it in .env.local or environment variables.");
@@ -123,20 +183,27 @@ async function callArk(payload) {
   const data = JSON.parse(raw);
   const content = data.choices?.[0]?.message?.content || "{}";
   return {
-    endpointId: ARK_ENDPOINT_ID,
-    modelName: ARK_MODEL_NAME,
-    content: JSON.parse(content),
+    content: parseAiJsonContent(content),
   };
 }
 
 async function handleAi(req, res) {
   try {
+    if (!isOriginAllowed(req.headers.origin)) {
+      send(req, res, 403, JSON.stringify({ ok: false, error: "Origin is not allowed." }));
+      return;
+    }
+    if (isRateLimited(req)) {
+      send(req, res, 429, JSON.stringify({ ok: false, error: "Too many AI requests. Try again later." }));
+      return;
+    }
     const body = await readRequestBody(req);
     const payload = JSON.parse(body || "{}");
     const result = await callArk(payload);
-    send(res, 200, JSON.stringify({ ok: true, ...result }));
+    send(req, res, 200, JSON.stringify({ ok: true, ...result }));
   } catch (error) {
     send(
+      req,
       res,
       200,
       JSON.stringify({
@@ -152,21 +219,29 @@ function serveStatic(req, res) {
   const safePath = url.pathname === "/" ? "/index.html" : url.pathname;
   const filePath = path.join(__dirname, decodeURIComponent(safePath));
   if (!filePath.startsWith(__dirname)) {
-    send(res, 403, "Forbidden", "text/plain; charset=utf-8");
+    send(req, res, 403, "Forbidden", "text/plain; charset=utf-8");
     return;
   }
   fs.readFile(filePath, (error, content) => {
     if (error) {
-      send(res, 404, "Not Found", "text/plain; charset=utf-8");
+      send(req, res, 404, "Not Found", "text/plain; charset=utf-8");
       return;
     }
-    send(res, 200, content, MIME_TYPES[path.extname(filePath)] || "application/octet-stream");
+    send(req, res, 200, content, MIME_TYPES[path.extname(filePath)] || "application/octet-stream");
   });
 }
 
 const server = http.createServer(async (req, res) => {
   if (req.method === "OPTIONS") {
-    send(res, 204, "");
+    if (!isOriginAllowed(req.headers.origin)) {
+      send(req, res, 403, "");
+      return;
+    }
+    send(req, res, 204, "");
+    return;
+  }
+  if (req.method === "GET" && req.url === "/api/health") {
+    send(req, res, 200, JSON.stringify({ ok: true, remoteAiConfigured: Boolean(ARK_API_KEY) }));
     return;
   }
   if (req.method === "POST" && req.url === "/api/ai-player") {
@@ -174,16 +249,17 @@ const server = http.createServer(async (req, res) => {
     return;
   }
   if (req.method === "GET" && req.url === "/favicon.ico") {
-    send(res, 204, "");
+    send(req, res, 204, "");
     return;
   }
   if (req.method === "GET") {
     serveStatic(req, res);
     return;
   }
-  send(res, 405, "Method Not Allowed", "text/plain; charset=utf-8");
+  send(req, res, 405, "Method Not Allowed", "text/plain; charset=utf-8");
 });
 
 server.listen(PORT, () => {
   console.log(`AI Werewolf server running at http://localhost:${PORT}`);
+  console.log(`AI provider configured for ${ARK_MODEL_NAME}`);
 });

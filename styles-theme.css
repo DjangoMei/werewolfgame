@@ -22,7 +22,7 @@ body::before {
   z-index: -1;
 }
 
-body:not(.game-ready) .app-shell {
+body:not(.game-ready) .game-viewport {
   display: none;
 }
 

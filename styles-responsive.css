@@ -1,4 +1,4 @@
-@media (max-width: 1240px) {
+@media (max-width: 899px) {
   .layout {
     grid-template-columns: 1fr;
   }
@@ -29,6 +29,37 @@
   .status-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+.game-viewport.game-compact-scale .layout {
+  grid-template-columns: 1fr;
+}
+
+.game-viewport.game-compact-scale .role-stage {
+  grid-template-columns: 1fr;
+}
+
+.game-viewport.game-compact-scale .players-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  min-height: auto;
+  border-radius: 8px;
+  background: transparent;
+  gap: 10px;
+}
+
+.game-viewport.game-compact-scale .players-grid::before {
+  display: none;
+}
+
+.game-viewport.game-compact-scale .player-card {
+  position: static;
+  transform: none;
+  width: auto;
+}
+
+.game-viewport.game-compact-scale .status-strip {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 @media (max-width: 640px) {

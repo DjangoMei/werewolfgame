@@ -7,6 +7,7 @@ function render() {
   renderVoiceControls();
   renderActions();
   renderLogs();
+  if (typeof scheduleGameScale === "function") scheduleGameScale();
 }
 
 function roleArtFor(player, visible = true) {
@@ -655,11 +656,13 @@ function beginOpeningDraw() {
   window.setTimeout(() => {
     document.body.classList.add("game-ready");
     startButton.disabled = false;
+    if (typeof scheduleGameScale === "function") scheduleGameScale();
   }, 1900);
 }
 
 function initGameApp() {
   document.body.classList.remove("game-ready");
+  if (typeof initGameScale === "function") initGameScale();
   initSpeechVoices();
   $("startGameBtn").addEventListener("click", beginOpeningDraw);
   $("newGameBtn").addEventListener("click", resetOpeningScreen);

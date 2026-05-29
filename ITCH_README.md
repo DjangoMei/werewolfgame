@@ -11,6 +11,7 @@ Important:
   - `ARK_API_KEY`
   - `ARK_ENDPOINT_ID`
   - `ARK_MODEL_NAME`
+- Do not add Ark keys, endpoint IDs, or provider URLs to `runtime-config.js`; browser files are public.
 - Then edit `runtime-config.js` before zipping/uploading:
 
 ```js

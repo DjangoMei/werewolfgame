@@ -17,6 +17,7 @@ const staticFiles = [
   "game-ai.js",
   "game-rules.js",
   "game-render.js",
+  "game-scale.js",
   "game-core.js",
   "app.js",
   "styles.css",
