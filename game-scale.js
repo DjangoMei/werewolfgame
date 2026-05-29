@@ -1,5 +1,5 @@
 const GAME_DESIGN_WIDTH = 1366;
-const GAME_COMPACT_WIDTH = 900;
+const GAME_COMPACT_WIDTH = 720;
 
 let gameScaleFrame = null;
 let gameScaleObserver = null;
